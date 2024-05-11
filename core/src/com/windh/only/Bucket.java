@@ -42,7 +42,7 @@ public class Bucket {
     }
 
     public void draw() {
-        batch.draw(image, rectangle.x, rectangle.y);
+        batch.draw(image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     public void dispose() {

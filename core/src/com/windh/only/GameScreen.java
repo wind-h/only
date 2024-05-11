@@ -1,11 +1,10 @@
 package com.windh.only;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,29 +12,35 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
+/**
+ * @author hsc
+ * @date 2024/5/11 14:34
+ */
+public class GameScreen implements Screen {
 
-public class Game extends ApplicationAdapter {
+    final Drop game;
+
+    OrthographicCamera camera;
 
     // 雨滴声音
     private Sound dropSound;
     // 下雨背景音乐
     private Music rainMusic;
 
-    private SpriteBatch batch;
-    private OrthographicCamera camera;
-
-    // 雨滴的矩形区域
-    private Array<Rectangle> drops;
-    // 上一个雨滴生成的时间戳
-    private long lastDropTime;
-
     private Bucket bucket;
 
     private Array<Rain> rainList = new Array<>();
 
+    // 上一个雨滴生成的时间戳
+    private long lastDropTime;
 
-    @Override
-    public void create() {
+    int dropsGathered;
+
+    public GameScreen(Drop game) {
+        this.game = game;
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 480);
+
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
         rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
         rainMusic.setLooping(true);
@@ -43,34 +48,39 @@ public class Game extends ApplicationAdapter {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
-        batch = new SpriteBatch();
 
-        bucket = new Bucket(batch, camera);
+        bucket = new Bucket(game.batch, camera);
         bucket.create();
-        Rain rain = new Rain(camera, batch);
+        Rain rain = new Rain(camera, game.batch);
         rain.create();
         lastDropTime = TimeUtils.nanoTime();
         rainList.add(rain);
     }
 
     @Override
-    public void render() {
-        // 清理屏幕
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        // 更新相机
+        // tell the camera to update its matrices.
         camera.update();
 
-        // 设置批次使用相机投影矩阵
-        batch.setProjectionMatrix(camera.combined);
+        // tell the SpriteBatch to render in the
+        // coordinate system specified by the camera.
+        game.batch.setProjectionMatrix(camera.combined);
 
         // 开始绘制批次，绘制桶和所有雨滴
-        batch.begin();
+        game.batch.begin();
+        game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
         bucket.draw();
         for (Rain rain : rainList) {
             rain.draw();
         }
-        batch.end();
+        game.batch.end();
 
         // 处理用户输入，移动桶
         bucket.handleUserInput();
@@ -92,27 +102,44 @@ public class Game extends ApplicationAdapter {
                 iter.remove();
             }
             if (raindrop.overlaps(bucket.getRectangle())) {
+                dropsGathered++;
                 dropSound.play();
                 iter.remove();
             }
         }
         // 根据设定的时间间隔检查是否需要生成新的雨滴
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000) {
-            Rain rain = new Rain(camera, batch);
+            Rain rain = new Rain(camera, game.batch);
             rain.create();
             lastDropTime = TimeUtils.nanoTime();
             rainList.add(rain);
         }
     }
 
-    /**
-     * 释放方法：释放所有资源。
-     */
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
     @Override
     public void dispose() {
         dropSound.dispose();
         rainMusic.dispose();
-        batch.dispose();
         bucket.dispose();
         for (Rain rain : rainList) {
             rain.dispose();

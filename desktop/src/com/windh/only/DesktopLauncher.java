@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.useVsync(true);
 		config.setForegroundFPS(60);
 		config.setTitle("only");
-		new Lwjgl3Application(new Game(), config);
+		new Lwjgl3Application(new Drop(), config);
 	}
 }
