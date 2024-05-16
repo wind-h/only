@@ -18,7 +18,7 @@ public class Rain {
      */
     private Rectangle rectangle;
 
-    private Texture image;
+    private final static Texture image = new Texture("droplet.png");
 
     private SpriteBatch batch;
 
@@ -31,7 +31,6 @@ public class Rain {
     public Rain(OrthographicCamera camera, SpriteBatch batch) {
         this.camera = camera;
         this.batch = batch;
-        image = new Texture("droplet.png");
     }
 
     public void create() {
@@ -48,14 +47,6 @@ public class Rain {
 
     public void dispose() {
         image.dispose();
-    }
-
-    public Texture getImage() {
-        return image;
-    }
-
-    public void setImage(Texture image) {
-        this.image = image;
     }
 
     public Rectangle getRectangle() {

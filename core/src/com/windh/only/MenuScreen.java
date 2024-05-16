@@ -15,10 +15,16 @@ public class MenuScreen implements Screen {
 
     OrthographicCamera camera;
 
+    private Integer windowW;
+
+    private Integer windowH;
+
     public MenuScreen(Drop game) {
         this.game = game;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        windowW = Gdx.graphics.getWidth();
+        windowH = Gdx.graphics.getHeight();
+        camera.setToOrtho(false, windowW, windowH);
     }
 
     @Override

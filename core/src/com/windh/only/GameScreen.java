@@ -36,10 +36,16 @@ public class GameScreen implements Screen {
 
     int dropsGathered;
 
+    private Integer windowW;
+
+    private Integer windowH;
+
     public GameScreen(Drop game) {
         this.game = game;
+        windowW = Gdx.graphics.getWidth();
+        windowH = Gdx.graphics.getHeight();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, windowW, windowH);
 
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
         rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
